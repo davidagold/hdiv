@@ -27,6 +27,7 @@ trial <- function(tau=1.1) {
   Sigma_d.hat <- .Sigmahat(D.hat)
   mus <- find_mu(Sigma_d.hat) * tau
   Theta.hat_CLIME <- .Theta.hat_CLIME(Sigma_d.hat, mus)
+  Theta.hat_CLIME_beta <- Theta.hat_CLIME[3:px, 3:px]
   # Theta.hat_JM <- .Theta.hat_JM(Sigma_d.hat, n)
 
   # de-biased second-stage lasso estimation
@@ -43,7 +44,9 @@ trial <- function(tau=1.1) {
   SE.gamma.hat <- solve(t(X12)%*%X12) * sd_u.hat^2
 
   # To record/compute estimate of Theta_jj (and Theta_jj)
-  Theta <- t(Alpha0) %*% Sigma_z %*% Alpha0
+  Theta <- bdiag(diag(1, 2), t(Alpha0) %*% Sigma_z %*% Alpha0) %>%
+    solve
+  Theta_beta <- Theta[3:px, 3:px]
 
   # estimator data
   # df_beta <- data.frame(
@@ -72,18 +75,18 @@ trial <- function(tau=1.1) {
     trial_id = rep(trial_id, 2*pw),
     estimator = c(rep("Debiased_CLIME", pw), rep("Lasso", pw)),
     j = rep(1:pw, 2),
-    estimate_j = c(beta_debiased_CLIME, beta_Lasso_D.hat),
+    estimate_j = c(beta_debiased_CLIME[3:px], beta_Lasso_D.hat[3:px]),
     beta0_j = rep(beta0, 2),
-    SE1 = c(.SE1(Sigma_d.hat, Theta.hat_CLIME, sd_u.hat),
+    SE1 = c(.SE1(Sigma_d.hat, Theta.hat_CLIME, sd_u.hat)[3:px],
             rep(NA, pw)),
-    SE2 = c(.SE2(D.hat, Theta.hat_CLIME, u.hat),
+    SE2 = c(.SE2(D.hat, Theta.hat_CLIME, u.hat)[3:px],
             rep(NA, pw)),
-    SE3 = c(.SE3(Theta.hat_CLIME, sd_u.hat),
+    SE3 = c(.SE3(Theta.hat_CLIME, sd_u.hat)[3:px],
             rep(NA, pw)),
-    Theta_jj = c(diag(Theta), rep(NA, pw)),
-    Theta.hat_jj = c(diag(Theta.hat_CLIME), rep(NA, pw)),
+    Theta_jj = c(diag(Theta_beta), rep(NA, pw)),
+    Theta.hat_jj = c(diag(Theta.hat_CLIME_beta), rep(NA, pw)),
     # vhat = rep(vhat, 2),
-    lambda_j = rep(lambda_j, 2)
+    lambda_j = rep(lambda_j[3:px], 2)
   )
 
   # statistics
@@ -125,7 +128,7 @@ trial <- function(tau=1.1) {
     j = c(1, 2),
     gamma_j = c(5, 2),
     gamma_j.hat = gamma.hat,
-    SE_j = diag(SE.gamma.hat %>% sqrt)
+    SE_j = diag(SE.gamma.hat) %>% sqrt
   )
 
   write.csv(df_beta, paste("res/beta_", config_id, "_", trial_id, ".csv", sep=""))
