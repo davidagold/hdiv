@@ -40,7 +40,7 @@ trial <- function(tau=1.1) {
   # Estimation for exogenous, partially linear components
   X12 <- cbind(X1,X2)
   gamma.hat <- solve(t(X12)%*%X12) %*% t(X12) %*% (y-W%*%beta_Lasso_D.hat[3:length(beta_Lasso_D.hat)])
-  SE.gamma.hat <- solve(t(X12)%*%X12) * sdu.hat^2
+  SE.gamma.hat <- solve(t(X12)%*%X12) * sd_u.hat^2
 
   # To record/compute estimate of Theta_jj (and Theta_jj)
   Theta <- t(Alpha0) %*% Sigma_z %*% Alpha0
