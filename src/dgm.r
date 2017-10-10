@@ -136,7 +136,7 @@ Sigma.hv. <- function(px, sigma0_v, sigma0_h, cor_hv, corstr) {
   X.y <- .X.y(D, beta0, Sigma.hv = Sigma.hv)
   X <- X.y$X; y <- X.y$y
 
-  obs <- list(y = y, X = X, Z = Z, W = W, X1 = X1, X2 = X2,
+  obs <- list(y = y, X = X, Z = Z, W = X.y$W, X1 = X.y$X1, X2 = X.y$X2,
               sigma0_h = config$sigma0_h, sigma0_v = config$sigma0_v,
               beta0 = beta0, Sigma_z=Sigma_z, Alpha0=Alpha0)
   obs
