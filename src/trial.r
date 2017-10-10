@@ -8,7 +8,7 @@ trial <- function(tau=1.1) {
   obs <- .obs(config_id)
   y <- obs$y; X <- obs$X; Z <- obs$Z; X1 <- obs$X1; X2 <- obs$X2; W <- obs$W
   # px = pw + 2
-  n <- nrow(X); px <- ncol(X); pz <- ncol(Z)
+  n <- nrow(X); px <- ncol(X); pz <- ncol(Z); pw <- px - 2
   Sigma_z <- obs$Sigma_z
   Alpha0 <- obs$Alpha0
   sigma0_h <- obs$sigma0_h; sigma0_v <- obs$sigma0_v
@@ -68,20 +68,20 @@ trial <- function(tau=1.1) {
   #   lambda_j = rep(lambda_j, 3)
   # )
   df_beta <- data.frame(
-    config_id = rep(config_id, 2*px),
-    trial_id = rep(trial_id, 2*px),
-    estimator = c(rep("Debiased_CLIME", px), rep("Lasso", px)),
-    j = rep(1:px, 2),
+    config_id = rep(config_id, 2*pw),
+    trial_id = rep(trial_id, 2*pw),
+    estimator = c(rep("Debiased_CLIME", pw), rep("Lasso", pw)),
+    j = rep(1:pw, 2),
     estimate_j = c(beta_debiased_CLIME, beta_Lasso_D.hat),
     beta0_j = rep(beta0, 2),
     SE1 = c(.SE1(Sigma_d.hat, Theta.hat_CLIME, sd_u.hat),
-            rep(NA, px)),
+            rep(NA, pw)),
     SE2 = c(.SE2(D.hat, Theta.hat_CLIME, u.hat),
-            rep(NA, px)),
+            rep(NA, pw)),
     SE3 = c(.SE3(Theta.hat_CLIME, sd_u.hat),
-            rep(NA, px)),
-    Theta_jj = c(diag(Theta), rep(NA, px)),
-    Theta.hat_jj = c(diag(Theta.hat_CLIME), rep(NA, px)),
+            rep(NA, pw)),
+    Theta_jj = c(diag(Theta), rep(NA, pw)),
+    Theta.hat_jj = c(diag(Theta.hat_CLIME), rep(NA, pw)),
     # vhat = rep(vhat, 2),
     lambda_j = rep(lambda_j, 2)
   )
