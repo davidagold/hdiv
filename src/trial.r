@@ -6,7 +6,8 @@ trial <- function(tau=1.1) {
   config_id <- args[1] %>% as.numeric
   trial_id <- Sys.getenv('SLURM_ARRAY_TASK_ID') %>% as.numeric
   obs <- .obs(config_id)
-  y <- obs$y; X <- obs$X; Z <- obs$Z;
+  y <- obs$y; X <- obs$X; Z <- obs$Z; X1 <- obs$X1; X2 <- obs$X2; W <- obs$W
+  # px = pw + 2
   n <- nrow(X); px <- ncol(X); pz <- ncol(Z)
   Sigma_z <- obs$Sigma_z
   Alpha0 <- obs$Alpha0
@@ -36,11 +37,16 @@ trial <- function(tau=1.1) {
   u.hat <- y - X %*% beta_Lasso_D.hat
   sd_u.hat <- u.hat^2 %>% mean %>% sqrt
 
+  # Estimation for exogenous, partially linear components
+  X12 <- cbind(X1,X2)
+  gamma.hat <- solve(t(X12)%*%X12) %*% t(X12) %*% (y-W%*%beta_Lasso_Xhat[3:length(beta_Lasso_Xhat)])
+  SE.gamma.hat <- solve(t(X12)%*%X12) * sdu.hat^2
+
   # To record/compute estimate of Theta_jj (and Theta_jj)
   Theta <- t(Alpha0) %*% Sigma_z %*% Alpha0
 
   # estimator data
-  # df_est <- data.frame(
+  # df_beta <- data.frame(
   #   config_id = rep(config_id, 3*px),
   #   trial_id = rep(trial_id, 3*px),
   #   estimator = c(rep("Debiased_CLIME", px), rep("Debiased_JM", px), rep("Lasso", px)),
@@ -61,7 +67,7 @@ trial <- function(tau=1.1) {
   #   # vhat = rep(vhat, 2),
   #   lambda_j = rep(lambda_j, 3)
   # )
-  df_est <- data.frame(
+  df_beta <- data.frame(
     config_id = rep(config_id, 2*px),
     trial_id = rep(trial_id, 2*px),
     estimator = c(rep("Debiased_CLIME", px), rep("Lasso", px)),
@@ -102,7 +108,7 @@ trial <- function(tau=1.1) {
   # )
   df_stats <- data.frame(
     config_id = rep(config_id, 2),
-    trial_id = rep(trial_id, 32),
+    trial_id = rep(trial_id, 2),
     estimator = c("Debiased_CLIME", "Lasso"),
     mse = c(mse_Debiased_CLIME, mse_Lasso_D.hat),
     sd_u = rep(sd_u.hat, 2),
@@ -113,6 +119,16 @@ trial <- function(tau=1.1) {
     lambda = rep(lambda, 2)
   )
 
-  write.csv(df_est, paste("res/est_", config_id, "_", trial_id, ".csv", sep=""))
+  df_gamma <- data.frame(
+    config_id = rep(config_id, 2),
+    trial_id = rep(trial_id, 2),
+    j = c(1, 2),
+    gamma_j = c(5, 2),
+    gamma_j.hat = gamma.hat,
+    SE_j = diag(SE.gamma.hat %>% sqrt)
+  )
+
+  write.csv(df_beta, paste("res/beta_", config_id, "_", trial_id, ".csv", sep=""))
   write.csv(df_stats, paste("res/stats_", config_id, "_", trial_id, ".csv", sep=""))
+  write.csv(df_gamma, paste("res/gamma_", config_id, "_", trial_id, ".csv", sep=""))
 }

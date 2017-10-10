@@ -23,6 +23,7 @@
   S_beta <- sample(1:px, size = s_beta, replace = FALSE)
   beta0 <- numeric(px) %>%
     { .[S_beta] <- b; .}
+  # beta0[1] <- 5; beta0[2] <- 2
   beta0
 }
 
@@ -103,9 +104,11 @@ Sigma.hv. <- function(px, sigma0_v, sigma0_h, cor_hv, corstr) {
   n <- nrow(D); px <- ncol(D)
   hV <- .hV(n, Sigma.hv)
   h <- hV$h; V <- hV$V;
-  X <- D + V
-  y <- X %*% beta0 + h
-  list(X = X, y = y, V = V, h = h)
+  W <- D + V
+  X1 <- rnorm(n); X2 <- rnorm(n)
+  X <- cbind(X1, X2, W)
+  y <- X1*5+X2*2+W %*% beta0 + h
+  list(X=X, X1 = X1, X2 = X2,y = y,W = W,V = V, h = h)
 }
 
 #########################################################################
@@ -133,7 +136,7 @@ Sigma.hv. <- function(px, sigma0_v, sigma0_h, cor_hv, corstr) {
   X.y <- .X.y(D, beta0, Sigma.hv = Sigma.hv)
   X <- X.y$X; y <- X.y$y
 
-  obs <- list(y = y, X = X, Z = Z,
+  obs <- list(y = y, X = X, Z = Z, W = W, X1 = X1, X2 = X2,
               sigma0_h = config$sigma0_h, sigma0_v = config$sigma0_v,
               beta0 = beta0, Sigma_z=Sigma_z, Alpha0=Alpha0)
   obs
