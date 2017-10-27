@@ -104,25 +104,27 @@ Sigma.uv. <- function(px, sigma0_v, sigma0_u) {
   config <- configs %>%
     filter(config_id == config_id.)
 
-  Alpha0 <- read.table(paste("configs", config_id., "Alpha0", sep = "/")) %>%
-    as.matrix %>%
-    { dimnames(.) <- NULL; . }
+  # Alpha0 <- read.table(paste("configs", config_id., "Alpha0", sep = "/")) %>%
+    # as.matrix %>%
+    # { dimnames(.) <- NULL; . }
   beta0 <- read.table(paste("configs", config_id., "beta0", sep = "/")) %>%
     as.matrix %>%
     { dimnames(.) <- NULL; . }
-  Sigma.uv <- read.table(paste("configs", config_id., "Sigma.uv", sep = "/")) %>%
-    as.matrix %>%
-    { dimnames(.) <- NULL; . }
+  # Sigma.uv <- read.table(paste("configs", config_id., "Sigma.uv", sep = "/")) %>%
+  #   as.matrix %>%
+  #   { dimnames(.) <- NULL; . }
 
   Sigma_z.Z <- .Sigma_z.Z(n = config$n, pz = config$pz, type = config$type)
   Sigma_z <- Sigma_z.Z$Sigma_z; Z <- Sigma_z.Z$Z
-  D <- .D(Z, Alpha0)
+  # D <- .D(Z, Alpha0)
 
-  X.y <- .X.y(D, beta0, Sigma.uv = Sigma.uv)
-  X <- X.y$X; y <- X.y$y
+  u <- rnorm(config$n, 0, config$sigma0_u)
+  y <- Z %*% beta0 + u
+  # X.y <- .X.y(D, beta0, Sigma.uv = Sigma.uv)
+  # X <- X.y$X; y <- X.y$y
 
-  obs <- list(y = y, X = X, Z = Z, D = D, u = X.y$u,
-              sigma0_u = config$sigma0_u, sigma0_v = config$sigma0_v,
-              beta0 = beta0, Sigma_z=Sigma_z, Alpha0=Alpha0)
+  obs <- list(y = y, Z = Z,
+              sigma0_u = config$sigma0_u,
+              beta0 = beta0, Sigma_z=Sigma_z)
   obs
 }

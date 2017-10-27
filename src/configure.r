@@ -15,14 +15,14 @@ configure <- function() {
   config <- configs %>%
     filter(config_id == .config_id)
 
-  Alpha0 <- .Alpha0(config$px, config$pz, config$a, config$s.j)
-  beta0 <- .beta0(config$px, config$b, config$s_beta)
-  Sigma.uv <- Sigma.uv.(config$px, config$sigma0_v, config$sigma0_u)
+  # Alpha0 <- .Alpha0(config$px, config$pz, config$a, config$s.j)
+  beta0 <- .beta0(config$pz, config$b, config$s_beta)
+  # Sigma.uv <- Sigma.uv.(config$px, config$sigma0_v, config$sigma0_u)
 
   # sprintf("Generating parameters for configuration %d", .config_id) %>% print
-  write.matrix(Alpha0, paste("configs", .config_id, "Alpha0", sep = "/"))
+  # write.matrix(Alpha0, paste("configs", .config_id, "Alpha0", sep = "/"))
   write.matrix(beta0, paste("configs", .config_id, "beta0", sep = "/"))
-  write.matrix(Sigma.uv, paste("configs", .config_id, "Sigma.uv", sep = "/"))
+  # write.matrix(Sigma.uv, paste("configs", .config_id, "Sigma.uv", sep = "/"))
 }
 
 configure()
