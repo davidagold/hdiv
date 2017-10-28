@@ -7,7 +7,7 @@ trial <- function(tau=1.1) {
   trial_id <- Sys.getenv('SLURM_ARRAY_TASK_ID') %>% as.numeric
   obs <- .obs(config_id)
   y <- obs$y; Z <- obs$Z; u <- obs$u
-  n <- nrow(X); pz <- ncol(Z)
+  n <- nrow(Z); pz <- ncol(Z)
   Sigma_z <- obs$Sigma_z
   sigma0_u <- obs$sigma0_u
   beta0 <- obs$beta0
@@ -40,7 +40,7 @@ trial <- function(tau=1.1) {
   beta_db_JM <- beta_Lasso + Theta.hat_JM %*% lambda_kappahat
 
   # Predict the second-stage noise
-  u.hat <- y - X %*% beta_Lasso
+  u.hat <- y - Z %*% beta_Lasso
   sd_u.hat <- u.hat^2 %>% mean %>% sqrt
 
   # To record/compute estimate of Theta_jj (and Theta_jj)
@@ -102,9 +102,9 @@ trial <- function(tau=1.1) {
   # statistics
   mu_star_CLIME <- (Theta.hat_CLIME %*% Sigma_z.hat - diag(1, ncol(Sigma_z.hat))) %>% abs %>% max
   mu_star_JM <- (Theta.hat_JM %*% Sigma_z.hat - diag(1, ncol(Sigma_z.hat))) %>% abs %>% max
-  mse_Debiased_CLIME <- (y - X %*% beta_db_CLIME)^2 %>% mean
-  mse_Debiased_JM <- (y - X %*% beta_db_JM)^2 %>% mean
-  mse_Lasso.hat <- (y - X %*% beta_Lasso)^2 %>% mean
+  mse_Debiased_CLIME <- (y - Z %*% beta_db_CLIME)^2 %>% mean
+  mse_Debiased_JM <- (y - Z %*% beta_db_JM)^2 %>% mean
+  mse_Lasso.hat <- (y - Z %*% beta_Lasso)^2 %>% mean
 
   # estimation statistics data
   df_stats <- data.frame(
