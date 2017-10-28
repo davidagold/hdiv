@@ -74,7 +74,7 @@ trial <- function(tau=1.1) {
     mu_stars = c(mu_stars_CLIME, mu_stars_JM, rep(NA, pz)),
     objs = c(objs_CLIME, objs_JM, rep(NA, pz)),
     w = c(w, w, rep(NA, pz)),
-    rem = c(rem_CLIME, rem_JM, rep(NA, pz)),
+    rem = c(rem_CLIME, rem_JM, rep(NA, pz))
   )
   # df_est <- data.frame(
   #   config_id = rep(config_id, 2*px),
@@ -102,7 +102,7 @@ trial <- function(tau=1.1) {
   mu_star_JM <- (Theta.hat_JM %*% Sigma_z.hat - diag(1, ncol(Sigma_z.hat))) %>% abs %>% max
   mse_Debiased_CLIME <- (y - Z %*% beta_db_CLIME)^2 %>% mean
   mse_Debiased_JM <- (y - Z %*% beta_db_JM)^2 %>% mean
-  mse_Lasso.hat <- (y - Z %*% beta_Lasso)^2 %>% mean
+  mse_Lasso <- (y - Z %*% beta_Lasso)^2 %>% mean
 
   # estimation statistics data
   df_stats <- data.frame(
