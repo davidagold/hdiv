@@ -123,7 +123,7 @@ Sigma.uv. <- function(px, sigma0_v, sigma0_u) {
   # X.y <- .X.y(D, beta0, Sigma.uv = Sigma.uv)
   # X <- X.y$X; y <- X.y$y
 
-  obs <- list(y = y, Z = Z,
+  obs <- list(y = y, Z = Z, u = u,
               sigma0_u = config$sigma0_u,
               beta0 = beta0, Sigma_z=Sigma_z)
   obs
