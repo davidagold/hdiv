@@ -12,8 +12,7 @@ trial <- function(tau=1.1) {
   sigma0_u <- obs$sigma0_u
   beta0 <- obs$beta0
 
-  # second-stage estimation
-  D.hat <- Z %*% Alpha0hat
+  # Lasso estimation
   lambda.beta_Lasso <- .lambda.beta_Lasso(y, Z, sigma0_u, no_pen_ids=c())
   lambda <- lambda.beta_Lasso$lambda; beta_Lasso <- lambda.beta_Lasso$beta_Lasso
 
@@ -44,7 +43,7 @@ trial <- function(tau=1.1) {
   sd_u.hat <- u.hat^2 %>% mean %>% sqrt
 
   # To record/compute estimate of Theta_jj (and Theta_jj)
-  Theta <- solve(t(Alpha0) %*% Sigma_z %*% Alpha0)
+  Theta <- solve(Sigma_z)
 
   # Calculate remainder terms
   rem_CLIME <-sqrt(n)*(Theta.hat_CLIME%*%Sigma_z.hat-Id)%*%(beta_Lasso-beta0)
