@@ -75,7 +75,6 @@ trial <- function(tau=1.1) {
     objs = c(objs_CLIME, objs_JM, rep(NA, pz)),
     w = c(w, w, rep(NA, pz)),
     rem = c(rem_CLIME, rem_JM, rep(NA, pz)),
-    lambda_j = rep(lambda_j, 3)
   )
   # df_est <- data.frame(
   #   config_id = rep(config_id, 2*px),
