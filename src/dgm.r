@@ -64,8 +64,8 @@ Sigma.uv. <- function(px, sigma0_v, sigma0_u) {
   b <- sigma0_u*sigma0_v
   v <- c(.5*b, rep(.25*b, r-1), rep(.25*b, r), rep(.05*b, px-2*r)) %>%
     sample
-  V <- diag(sigma0_v, px)
-  Sigma_uv <- rbind(c(sigma0_u, v),
+  V <- diag(sigma0_v^2, px)
+  Sigma_uv <- rbind(c(sigma0_u^2, v),
         cbind(v, V))
   dimnames(Sigma_uv) <- NULL
   Sigma_uv
